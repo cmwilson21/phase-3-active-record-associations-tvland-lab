@@ -9,3 +9,29 @@ task :console do
   # Open a Pry session
   Pry.start
 end
+
+
+desc "drops database"
+task :drop_db do
+  puts "Dropping Databases..."
+  system "rm db/development.sqlite3"
+  system "rm db/test.sqlite3"
+  system "rm db/schema.rb"
+end
+
+desc "migrates databases (both development and testing)"
+task :migrations do
+  puts "Migrating Databases..."
+  system "rake db:migrate && rake db:migrate RACK_ENV=test"
+end
+
+desc "drop and migrate all databases"
+task :reset_db do
+  Rake::Task[:drop_db].execute
+  Rake::Task[:migrations].execute
+end
+
+desc "rollback both development and testing databases"
+task :rollback_db do
+  system "rake db:rollback && rake db:rollback RACK_ENV=test"
+end
